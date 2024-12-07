@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  userId        String
+  amount        Float
+  currency      String   @default("USD")
+  status        String   // pending, completed, failed
+  providerPaymentId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  items         PaymentItem[]
+}
+
+model PaymentItem {
+  id        String   @id @default(cuid())
+  paymentId String
+  payment   Payment  @relation(fields: [paymentId], references: [id])
+  itemId    String
+  name      String
+  quantity  Int
+  price     Float
+  type      String   // rank, kit, key, token
+  createdAt DateTime @default(now())
+}
